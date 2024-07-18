@@ -8,9 +8,12 @@ pipeline {
         SONARQUBE_PROJECT_KEY = 'SSDPractice'
     }
     stages {
-        stage('OWASP DependencyCheck') {
+        
+        stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'owasp'
+                withCredentials([string(credentialsId: 'NVD_API_KEY', variable: 'NVD_API_KEY')]) {
+                    dependencyCheck additionalArguments: "--format XML --format HTML --out ./reports --enableExperimental --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'owasp'
+                }
             }
         }
         stage('SonarQube Analysis') {

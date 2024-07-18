@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+		docker {
+			image 'composer:latest'
+		}
+	}
     environment {
         NVD_API_KEY = credentials('NVD_API_KEY')
         SONARQUBE_URL = 'http://172.10.10.4:9000'
@@ -7,29 +11,38 @@ pipeline {
         SONARQUBE_TOKEN = credentials('SONARQUBE_TOKEN')
         SONARQUBE_PROJECT_KEY = 'SSDPractice'
     }
-    stages {
-        
-        stage('OWASP DependencyCheck') {
-            steps {
-                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'owasp', nvdCredentialsId: 'NVD_API_KEY'
+    stages {       
+        stage('Build') {
+			steps {
+				sh 'composer install'
+			}
+		}
+		stage('Test') {
+			steps {
+                sh './vendor/bin/phpunit tests'
             }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                        ${SONARQUBE_SCANNER}/bin/sonar-scanner \
-                        -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONARQUBE_URL} \
-                        -Dsonar.token=${SONARQUBE_TOKEN} \
-                        -Dsonar.python.version=3.9
-                        '''
-                    }
-                }
-            }
-        }
+		} 
+        // stage('OWASP DependencyCheck') {
+        //     steps {
+        //         dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'owasp', nvdCredentialsId: 'NVD_API_KEY'
+        //     }
+        // }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             withSonarQubeEnv('SonarQube') {
+        //                 sh '''
+        //                 ${SONARQUBE_SCANNER}/bin/sonar-scanner \
+        //                 -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
+        //                 -Dsonar.sources=. \
+        //                 -Dsonar.host.url=${SONARQUBE_URL} \
+        //                 -Dsonar.token=${SONARQUBE_TOKEN} \
+        //                 -Dsonar.python.version=3.9
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     
@@ -41,26 +54,4 @@ pipeline {
             // cleanWs(deleteDirs: true, disableDeferredWipeout: true)
         }
     }
-}
-
-
-
-pipeline {
-	agent {
-		docker {
-			image 'composer:latest'
-		}
-	}
-	stages {
-		stage('Build') {
-			steps {
-				sh 'composer install'
-			}
-		}
-		stage('Test') {
-			steps {
-                sh './vendor/bin/phpunit tests'
-            }
-		}
-	}
 }

@@ -11,7 +11,7 @@ pipeline {
         
         stage('OWASP DependencyCheck') {
             steps {
-                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'owasp'
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'owasp', nvdCredentialsId: 'NVD_API_KEY'
             }
         }
         stage('SonarQube Analysis') {

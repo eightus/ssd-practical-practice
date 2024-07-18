@@ -19,7 +19,7 @@ pipeline {
 		}
 		stage('Test') {
 			steps {
-                sh './vendor/bin/phpunit tests'
+                sh './vendor/bin/phpunit --log-junit logs/unitreport.xml -c tests/phpunit.xml tests'
             }
 		} 
         // stage('OWASP DependencyCheck') {
@@ -48,10 +48,13 @@ pipeline {
     
 
     post {
-        success {
-            archiveArtifacts artifacts: 'dependency-check-report.xml, dependency-check-report.html', allowEmptyArchive: true
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            // cleanWs(deleteDirs: true, disableDeferredWipeout: true)
+        always {
+            junit testResults: 'logs/unitreport.xml'
         }
+        // success {
+            // archiveArtifacts artifacts: 'dependency-check-report.xml, dependency-check-report.html', allowEmptyArchive: true
+            // dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            // cleanWs(deleteDirs: true, disableDeferredWipeout: true)
+        // }
     }
 }

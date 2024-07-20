@@ -34,13 +34,13 @@ pipeline {
     
 
     post {
-        always {
-            // junit testResults: 'logs/unitreport.xml'
-        }
-        // success {
+        // always {
+        //     // junit testResults: 'logs/unitreport.xml'
+        // }
+        success {
             archiveArtifacts artifacts: 'dependency-check-report.xml, dependency-check-report.html', allowEmptyArchive: true
             dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             // cleanWs(deleteDirs: true, disableDeferredWipeout: true)
-        // }
+        }
     }
 }

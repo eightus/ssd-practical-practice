@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-		docker {
-			image 'composer:latest'
-		}
-	}
+    agent none
     environment {
         NVD_API_KEY = credentials('NVD_API_KEY')
         SONARQUBE_URL = 'http://172.10.10.4:9000'

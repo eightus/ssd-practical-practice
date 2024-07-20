@@ -2,10 +2,10 @@ pipeline {
     agent none
     environment {
         NVD_API_KEY = credentials('NVD_API_KEY')
-        SONARQUBE_URL = 'http://172.10.10.4:9000'
-        SONARQUBE_SCANNER = tool name: 'sonar-scanner'
-        SONARQUBE_TOKEN = credentials('SONARQUBE_TOKEN')
-        SONARQUBE_PROJECT_KEY = 'SSDPractice'
+        // SONARQUBE_URL = 'http://172.10.10.4:9000'
+        // SONARQUBE_SCANNER = tool name: 'sonar-scanner'
+        // SONARQUBE_TOKEN = credentials('SONARQUBE_TOKEN')
+        // SONARQUBE_PROJECT_KEY = 'SSDPractice'
     }
     stages {       
         stage('OWASP DependencyCheck') {
@@ -35,11 +35,11 @@ pipeline {
 
     post {
         always {
-            junit testResults: 'logs/unitreport.xml'
+            // junit testResults: 'logs/unitreport.xml'
         }
         // success {
-            // archiveArtifacts artifacts: 'dependency-check-report.xml, dependency-check-report.html', allowEmptyArchive: true
-            // dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            archiveArtifacts artifacts: 'dependency-check-report.xml, dependency-check-report.html', allowEmptyArchive: true
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             // cleanWs(deleteDirs: true, disableDeferredWipeout: true)
         // }
     }
